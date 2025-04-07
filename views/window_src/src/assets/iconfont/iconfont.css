@@ -1,0 +1,143 @@
+@font-face {
+  font-family: "iconfont"; /* Project id 4622128 */
+  src: url('iconfont.woff2?t=1721272127715') format('woff2'),
+       url('iconfont.woff?t=1721272127715') format('woff'),
+       url('iconfont.ttf?t=1721272127715') format('truetype');
+}
+
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-xuanzhong1:before {
+  content: "\e62f";
+}
+
+.icon-xuanzhong2:before {
+  content: "\e62e";
+}
+
+.icon-danxuanweixuanzhong_o:before {
+  content: "\eb5e";
+}
+
+.icon-danxuanweixuanzhong:before {
+  content: "\e62d";
+}
+
+.icon-weixuanzhong:before {
+  content: "\e8bb";
+}
+
+.icon-xuanzhong:before {
+  content: "\e6e1";
+}
+
+.icon-radio-unselect:before {
+  content: "\e626";
+}
+
+.icon-radio-selected:before {
+  content: "\e627";
+}
+
+.icon-down:before {
+  content: "\e6a8";
+}
+
+.icon-up:before {
+  content: "\e6a9";
+}
+
+.icon-mode-system:before {
+  content: "\e60e";
+}
+
+.icon-mode-tun:before {
+  content: "\e66f";
+}
+
+.icon-rule-global:before {
+  content: "\e63b";
+}
+
+.icon-rule-cn:before {
+  content: "\e616";
+}
+
+.icon-windows-close:before {
+  content: "\e639";
+}
+
+.icon-windows-close-hover:before {
+  content: "\e837";
+}
+
+.icon-linux-close:before {
+  content: "\e83a";
+}
+
+.icon-linux-close-hover:before {
+  content: "\e83b";
+}
+
+.icon-windows-maximize:before {
+  content: "\e692";
+}
+
+.icon-windows-minimize-hover:before {
+  content: "\e650";
+}
+
+.icon-windows-maximize-hover:before {
+  content: "\e838";
+}
+
+.icon-linux-maximize-hover:before {
+  content: "\e83c";
+}
+
+.icon-linux-maximize:before {
+  content: "\e83d";
+}
+
+.icon-windows-minimize:before {
+  content: "\e83e";
+}
+
+.icon-linux-minimize-hover:before {
+  content: "\e83f";
+}
+
+.icon-linux-minimize:before {
+  content: "\e840";
+}
+
+.icon-mac-minimize:before {
+  content: "\e6df";
+}
+
+.icon-mac-close-hover:before {
+  content: "\e6e2";
+}
+
+.icon-mac-maximize:before {
+  content: "\e839";
+}
+
+.icon-mac-close:before {
+  content: "\e841";
+}
+
+.icon-mac-minimize-hover:before {
+  content: "\e835";
+}
+
+.icon-mac-maximize-hover:before {
+  content: "\e836";
+}
+

@@ -1,0 +1,85 @@
+name: Release Windows
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+      - 'channel_v*.*.*_*'
+      - 'beta_*_channel_v*.*.*_*'
+
+jobs:
+  release:
+    name: Release Windows flow
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest]
+    env:
+      DO_SIGN: ${{ (secrets.WINDOWS_CSC_LINK != '' && secrets.WINDOWS_CSC_KEY_PASSWORD != '') && 1 || 0 }}
+      DO_NOTARIZE: ${{ (secrets.WINDOWS_ID != '' && secrets.WINDOWS_ID_PASSWORD != '' && secrets.WINDOWS_TEAM_ID != '') && 1 || 0 }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20.11"
+          registry-url: https://npm.pkg.github.com/
+
+      - name: Install
+        run: |
+          npm run install:view:window
+          npm run install:box
+          npm run icons:win
+          npm run obfuscate
+          npm run channel -- ${{ github.ref_name }}
+
+      - name: Build views
+        run: |
+          npm run build:view:window
+
+      - name: Build box with sign
+        if: env.DO_SIGN == 1
+        env:
+          CSC_LINK: ${{ secrets.WINDOWS_CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.WINDOWS_CSC_KEY_PASSWORD }}
+        run: |
+          npm run build:box:win
+
+      - name: Build box without sign
+        if: env.DO_SIGN == 0
+        run: |
+          npm run build:box:win
+
+      - name: Notarize box
+        if: env.DO_NOTARIZE == 1
+        env:
+          ID: ${{ secrets.WINDOWS_ID }}
+          ID_PASSWORD: ${{ secrets.WINDOWS_ID_PASSWORD }}
+          TEAM_ID: ${{ secrets.WINDOWS_TEAM_ID }}
+        run: |
+          for file in dist/*-arm64-*.exe; do echo "Notarize $file"; done
+          for file in dist/*-arm64-*.exe; do xcrun notarytool submit $file --apple-id ${{ env.APPLE_ID }} --password ${{ env.APPLE_ID_PASSWORD }} --team-id ${{ env.APPLE_TEAM_ID }}; done
+          for file in dist/*-x64-*.exe; do echo "Notarize $file"; done
+          for file in dist/*-x64-*.exe; do xcrun notarytool submit $file --apple-id ${{ env.APPLE_ID }} --password ${{ env.APPLE_ID_PASSWORD }} --team-id ${{ env.APPLE_TEAM_ID }}; done
+
+      - name: Package
+        run: |
+          npm run pkg
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            dist/*.zip
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GITHUB_TOKEN: ${{ secrets.V2B_PKG_REPOSITORY_TOKEN }}
+        with:
+          repository: niubirbang/v2b-pkg
+          files: |
+            dist/*.zip

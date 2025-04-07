@@ -1,0 +1,15 @@
+/api.js
+/config.js
+/const.js
+/core.js
+/hook.js
+/ipc.js
+/logger.js
+/message.js
+/network.js
+/system.js
+/tray.js
+/updater.js
+/util.js
+/window.js
+/xfuture.js
