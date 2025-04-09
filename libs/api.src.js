@@ -399,7 +399,7 @@ const set_user = (param = {
 }
 const get_user = () => {
   return {
-    id: user?.user_id,
+    id: user?.id || user?.user_id,
     account: user?.user_name,
     email: user?.email,
     phone: user?.tel,
@@ -1076,6 +1076,7 @@ const bind_invite_code = (code) => {
       if (user) {
         user.bind_invite_code = code
       }
+      resolve()
     } catch (err) {
       reject(err)
     }
@@ -1191,7 +1192,7 @@ const data_to_subscribe = (data) => {
     for (let url of item.node) {
       const x = x_parse(url)
       children.push({
-        name: x.remark,
+        name: decodeURIComponent(x.remark),
         url: url,
         address: x.address,
         port: x.port,

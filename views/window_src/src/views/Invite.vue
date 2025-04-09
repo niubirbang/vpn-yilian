@@ -1,118 +1,124 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { useRouter } from "vue-router"
-import { useStore } from 'vuex'
-import { ElLoading } from 'element-plus'
-import { Success, Error } from '@/notification'
-import QRCode from 'qrcode'
-import useClipboard from 'vue-clipboard3'
-import html2canvas from 'html2canvas'
-import InviteBind from '@/components/custom/InviteBind.vue'
+import { ref, computed, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { useStore } from "vuex";
+import { ElLoading } from "element-plus";
+import { Success, Error } from "@/notification";
+import QRCode from "qrcode";
+import useClipboard from "vue-clipboard3";
+import html2canvas from "html2canvas";
+import InviteBind from "@/components/custom/InviteBind.vue";
 
-const router = useRouter()
-const store = useStore()
+const router = useRouter();
+const store = useStore();
 
-const { toClipboard } = useClipboard()
+const { toClipboard } = useClipboard();
 
-const authorized = computed(() => store.state.authorized)
-const user_binded_invite_code = computed(() => store.state.user_binded_invite_code ? true : false)
-const inviteCode = ref(null)
-const inviteURL = ref()
-const inviteRules = ref([])
-const inviteQRRef = ref(null)
-const inviteQRURL = ref(null)
-const show_invite_bind = ref(false)
+const authorized = computed(() => store.state.authorized);
+const user_binded_invite_code = computed(() =>
+  store.state.user_binded_invite_code ? true : false
+);
+const inviteCode = ref(null);
+const inviteURL = ref();
+const inviteRules = ref([]);
+const inviteQRRef = ref(null);
+const inviteQRURL = ref(null);
+const show_invite_bind = ref(false);
 
 const copyCode = async () => {
   try {
-    await toClipboard(inviteCode.value)
-    Success('复制成功')
+    await toClipboard(inviteCode.value);
+    Success("复制成功");
   } catch (err) {
-    console.error('clipboard copy failed:', err)
-    Error('复制失败')
+    console.error("clipboard copy failed:", err);
+    Error("复制失败");
   }
-}
+};
 
 const copyURL = async () => {
   try {
-    await toClipboard(inviteURL.value)
-    Success('复制成功')
+    await toClipboard(inviteURL.value);
+    Success("复制成功");
   } catch (err) {
-    console.error('clipboard copy failed:', err)
-    Error('复制失败')
+    console.error("clipboard copy failed:", err);
+    Error("复制失败");
   }
-}
+};
 
 const saveQR = async () => {
   try {
-    const canvas = await html2canvas(inviteQRRef.value)
-    const image = canvas.toDataURL('image/png')
-    const a = document.createElement('a')
-    a.href = image
-    a.download = `我的邀请码.png`
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
+    const canvas = await html2canvas(inviteQRRef.value);
+    const image = canvas.toDataURL("image/png");
+    const a = document.createElement("a");
+    a.href = image;
+    a.download = `我的邀请码.png`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   } catch (err) {
-    console.error('save image failed:', err)
+    console.error("save image failed:", err);
   }
-}
+};
 
 const load = () => {
   const loading = ElLoading.service({
     lock: true,
-    background: 'rgba(0, 0, 0, 0.7)',
-  })
+    background: "rgba(0, 0, 0, 0.7)",
+  });
 
-  window.box_api.inviteInfo().then((data) => {
-    inviteCode.value = data.invite_code
-    inviteURL.value = data.invite_link
-    for (let rule of data.invite_rule.split('\n')) {
-      rule = rule.trim()
-      if (rule) {
-        inviteRules.value.push(rule)
+  window.box_api
+    .inviteInfo()
+    .then((data) => {
+      inviteCode.value = data.invite_code;
+      inviteURL.value = data.invite_link;
+      for (let rule of data.invite_rule.split("\n")) {
+        rule = rule.trim();
+        if (rule) {
+          inviteRules.value.push(rule);
+        }
       }
-    }
-    loadQR()
-  }).catch(err => {
-    Error(err)
-  }).finally(() => {
-    loading.close()
-  })
-}
+      loadQR();
+    })
+    .catch((err) => {
+      Error(err);
+    })
+    .finally(() => {
+      loading.close();
+    });
+};
 
 const loadQR = () => {
   try {
     QRCode.toDataURL(
       inviteURL.value,
       {
-        errorCorrectionLevel: 'H',
+        errorCorrectionLevel: "H",
         margin: 1,
       },
       (err, url) => {
         if (err) {
-          console.error('gen qr code failed:', err)
-          url = null
+          console.error("gen qr code failed:", err);
+          url = null;
         }
-        inviteQRURL.value = url
+        inviteQRURL.value = url;
       }
-    )
+    );
   } catch (err) {
-    console.error('gen qr code failed:', err)
+    console.error("gen qr code failed:", err);
   }
-}
+};
 
 const showInviteBind = () => {
   if (!authorized.value) {
-    router.push('/login')
-    return
+    router.push("/login");
+    return;
   }
-  show_invite_bind.value = true
-}
+  show_invite_bind.value = true;
+};
 
 onMounted(() => {
-  load()
-})
+  load();
+});
 </script>
 
 <template>
@@ -120,34 +126,27 @@ onMounted(() => {
     <p class="page-title">邀请奖励指南</p>
     <div class="plate shadow flows">
       <div class="flow">
-        <img src="@/assets/image/invite-1.png">
+        <img src="@/assets/image/invite-1.png" />
         <p>邀请好友下载</p>
       </div>
-      <img
-        class="split"
-        src="@/assets/image/invite-right.png"
-      >
+      <img class="split" src="@/assets/image/invite-right.png" />
       <div class="flow">
-        <img src="@/assets/image/invite-2.png">
+        <img src="@/assets/image/invite-2.png" />
         <p>好友绑定成功</p>
       </div>
-      <img
-        class="split"
-        src="@/assets/image/invite-right.png"
-      >
+      <img class="split" src="@/assets/image/invite-right.png" />
       <div class="flow">
-        <img src="@/assets/image/invite-3.png">
+        <img src="@/assets/image/invite-3.png" />
         <p>双方获得奖励</p>
       </div>
     </div>
     <div class="links">
-      <div
-        class="option shadow pointer bg-invite-bind"
-        @click="showInviteBind"
-      >
-        <img src="@/assets/image/invite-bind.png">
+      <div class="option shadow pointer bg-invite-bind" @click="showInviteBind">
+        <img src="@/assets/image/invite-bind.png" />
         <p>
-          <template v-if="!authorized || !user_binded_invite_code">绑定好友</template>
+          <template v-if="!authorized || !user_binded_invite_code"
+            >绑定好友</template
+          >
           <template v-else>已绑定</template>
         </p>
       </div>
@@ -155,14 +154,11 @@ onMounted(() => {
         class="option shadow pointer bg-invite-history"
         v-push="'/invite_award'"
       >
-        <img src="@/assets/image/invite-history.png">
+        <img src="@/assets/image/invite-history.png" />
         <p>领取奖励</p>
       </div>
     </div>
-    <div
-      class="plate shadow invite-info"
-      :class="{ unauthorize: !authorized }"
-    >
+    <div class="plate shadow invite-info" :class="{ unauthorize: !authorized }">
       <div class="bg-title">
         <p>邀请好友</p>
       </div>
@@ -174,28 +170,20 @@ onMounted(() => {
             v-if="inviteQRURL"
             :src="inviteQRURL"
             @click="saveQR"
-          >
-          <div
-            class="invite-code pointer"
-            @click="copyCode"
-          >
+          />
+          <div class="invite-code pointer" @click="copyCode">
             <p>邀请码:</p>
             <p>{{ inviteCode }}</p>
-            <img src="@/assets/image/icon-copy.png">
+            <img src="@/assets/image/icon-copy.png" />
           </div>
-          <el-button
-            type="primary"
-            round
-            @click="copyURL"
-          >点击复制邀请链接</el-button>
+          <el-button type="primary" round @click="copyURL"
+            >点击复制邀请链接</el-button
+          >
         </div>
       </template>
       <template v-else>
-        <div
-          class="pointer invite-unauthorize"
-          v-push="'/login'"
-        >
-          <img src="@/assets/image/icon-lock.png">
+        <div class="pointer invite-unauthorize" v-push="'/login'">
+          <img src="@/assets/image/icon-lock.png" />
           <p>请登录后邀请</p>
         </div>
       </template>
@@ -204,13 +192,9 @@ onMounted(() => {
       <div class="bg-title">
         <p>奖励内容</p>
       </div>
-      <p
-        class="rule"
-        v-for="(rule, i) in inviteRules"
-        :key="i"
-      >{{ rule }}</p>
+      <p class="rule" v-for="(rule, i) in inviteRules" :key="i">{{ rule }}</p>
     </div>
-    <InviteBind v-model:show="show_invite_bind" />
+    <InviteBind v-model:show="show_invite_bind" v-model:bindSuccess="load" />
   </div>
 </template>
 

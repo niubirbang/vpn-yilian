@@ -1,24 +1,51 @@
 <script setup>
-import { reactive, computed } from 'vue'
-import { useRouter } from "vue-router"
-import { useStore } from 'vuex'
-import { Error } from '@/notification'
+import { reactive, computed } from "vue";
+import { useRouter } from "vue-router";
+import { useStore } from "vuex";
+import { Success, Error } from "@/notification";
+import { ElLoading } from "element-plus";
 
-const router = useRouter()
-const store = useStore()
+const router = useRouter();
+const store = useStore();
 
-const show = defineModel('show', {
+const show = defineModel("show", {
   default: false,
-})
+});
 
-const user_binded_invite_code = computed(() => store.state.user_binded_invite_code ? true : false)
+const bindSuccess = defineModel("bindSuccess", {
+  default: () => {},
+});
+
+const user_binded_invite_code = computed(() =>
+  store.state.user_binded_invite_code ? true : false
+);
 
 const form = reactive({
   invite_code: store.state.user_binded_invite_code,
-})
+});
 
 const submit = () => {
-}
+  const loading = ElLoading.service({
+    lock: true,
+    background: "rgba(0, 0, 0, 0.7)",
+  });
+
+  window.box_api
+    .bindInviteCode(form.invite_code)
+    .then(() => {
+      form.invite_code = "";
+      loading.close();
+      Success("绑定成功");
+      show.value = false;
+      if (typeof bindSuccess.value === "function") {
+        bindSuccess.value();
+      }
+    })
+    .catch((err) => {
+      loading.close();
+      Error(err);
+    });
+};
 </script>
 
 <template>
