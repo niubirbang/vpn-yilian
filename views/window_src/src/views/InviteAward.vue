@@ -1,63 +1,75 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import { ElLoading } from 'element-plus'
-import { Error } from '@/notification'
-import { $DateTimeFormat } from '@/util'
+import { ref, onMounted } from "vue";
+import { ElLoading } from "element-plus";
+import { Error } from "@/notification";
+import { $DateTimeFormat } from "@/util";
 
-const total_duration = ref(0)
-const awards = ref([])
-const loading = ref(false)
+const total_duration = ref(0);
+const awards = ref([]);
+const loading = ref(false);
 
 const load = () => {
-  loading.value = true
+  loading.value = true;
   const _loading = ElLoading.service({
     lock: true,
-    background: 'rgba(0, 0, 0, 0.7)',
-  })
+    background: "rgba(0, 0, 0, 0.7)",
+  });
 
-  window.box_api.inviteAward().then((data) => {
-    total_duration.value = data.total_duration
-    awards.value = data.data
-  }).catch(err => {
-    Error(err)
-  }).finally(() => {
-    _loading.close()
-    loading.value = false
-  })
-}
+  window.box_api
+    .inviteAward()
+    .then((data) => {
+      total_duration.value = Math.ceil(data.total_duration / 60);
+      awards.value = data.data;
+    })
+    .catch((err) => {
+      Error(err);
+    })
+    .finally(() => {
+      _loading.close();
+      loading.value = false;
+    });
+};
 
 const award_all = () => {
   const _loading = ElLoading.service({
     lock: true,
-    background: 'rgba(0, 0, 0, 0.7)',
-  })
+    background: "rgba(0, 0, 0, 0.7)",
+  });
 
-  window.box_api.inviteAwardAll().then(() => {
-    load()
-  }).catch(err => {
-    Error(err)
-  }).finally(() => {
-    _loading.close()
-  })
-}
+  window.box_api
+    .inviteAwardAll()
+    .then(() => {
+      load();
+    })
+    .catch((err) => {
+      Error(err);
+    })
+    .finally(() => {
+      _loading.close();
+    });
+};
 const award_item = (id) => {
   const _loading = ElLoading.service({
     lock: true,
-    background: 'rgba(0, 0, 0, 0.7)',
-  })
+    background: "rgba(0, 0, 0, 0.7)",
+  });
 
-  window.box_api.inviteAwardItem(id).then(async () => {
-    await load()
-  }).catch(err => {
-    Error(err)
-  }).finally(() => {
-    _loading.close()
-  })
-}
+  window.box_api
+    .inviteAwardItem(id)
+    .then(async () => {
+      await load();
+    })
+    .catch((err) => {
+      Error(err);
+    })
+    .finally(() => {
+      _loading.close();
+    });
+};
 
 onMounted(() => {
-  load()
-})
+  load();
+});
 </script>
 
 <template>
@@ -75,17 +87,12 @@ onMounted(() => {
           :disabled="!total_duration"
           round
           @click="award_all"
-        >一键领取</el-button>
+          >一键领取</el-button
+        >
       </div>
     </div>
-    <p
-      class="no-data"
-      v-if="!loading && awards.length == 0"
-    >暂无数据</p>
-    <div
-      class="award shadow"
-      v-for="(award, i) in awards"
-    >
+    <p class="no-data" v-if="!loading && awards.length == 0">暂无数据</p>
+    <div class="award shadow" v-for="(award, i) in awards">
       <div class="item">
         <p class="key">奖励类型</p>
         <p class="value">{{ award?.type }}</p>
