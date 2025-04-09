@@ -1077,6 +1077,7 @@ const bind_invite_code = (code) => {
         user.bind_invite_code = code
       }
       resolve()
+      sync_user()
     } catch (err) {
       reject(err)
     }
