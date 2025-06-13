@@ -59,7 +59,7 @@
   },
   "build": {
     "appId": "com.yilian.www",
-    "productName": "YL-SPEED",
+    "productName": "易链加速器",
     "artifactName": "YL-SPEED-${os}-${arch}-${version}-setup.${ext}",
     "copyright": "Copyright © 2024 All Rights Reserved",
     "files": [
