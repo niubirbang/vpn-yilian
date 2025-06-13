@@ -56,7 +56,7 @@ const emailCodeSend = () => {
     lock: true,
     background: 'rgba(0, 0, 0, 0.7)',
   })
-  window.box_api.ses(2, form.email).then(() => {
+  window.box_api.ses(1, form.email).then(() => {
     codeCountdown.value = 60
     let ticker = setInterval(() => {
       if (codeCountdown.value <= 0) {
