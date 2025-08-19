@@ -1,127 +1,127 @@
 <script setup>
-import { ref, computed } from 'vue'
-import { useRouter } from "vue-router"
-import { useI18n } from 'vue-i18n'
-import { $OS } from '@/util'
+import { ref, computed } from "vue";
+import { useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
+import { $OS } from "@/util";
 
-const router = useRouter()
-const $t = useI18n().t
-const os = ref($OS())
+const router = useRouter();
+const { t: $t, te: $te } = useI18n();
+const os = ref($OS());
 
 const title = computed(() => {
   if (!router.currentRoute.value || !router.currentRoute.value.name) {
-    return ''
+    return "";
   }
-  return $t(`router_${router.currentRoute.value.name}`)
-})
+  const key = `router_${router.currentRoute.value.name}`;
+  if ($te(key)) {
+    return $t(key);
+  }
+  return null;
+});
 
 const showBackup = computed(() => {
-  if (router.currentRoute.value.meta && router.currentRoute.value.meta.nobackup) {
-    return false
+  if (
+    router.currentRoute.value.meta &&
+    router.currentRoute.value.meta.nobackup
+  ) {
+    return false;
   }
-  return true
-})
+  return true;
+});
 const backupPosition = computed(() => {
   switch (os.value) {
-    case 'mac':
-    case 'linux':
-      return 'right'
-    case 'windows':
-      return 'left'
+    case "mac":
+    case "linux":
+      return "right";
+    case "windows":
+      return "left";
     default:
-      return 'left'
+      return "left";
   }
-})
+});
 
 const toolsPosition = computed(() => {
   switch (os.value) {
-    case 'mac':
-    case 'linux':
-      return 'left'
-    case 'windows':
-      return 'right'
+    case "mac":
+    case "linux":
+      return "left";
+    case "windows":
+      return "right";
     default:
-      return 'right'
+      return "right";
   }
-})
-const hoverToolName = ref(null)
+});
+const hoverToolName = ref(null);
 const tool_os_order = {
   close: {
-    mac: 'o1',
-    linux: 'o1',
-    windows: 'o2',
+    mac: "o1",
+    linux: "o1",
+    windows: "o2",
   },
   minimize: {
-    mac: 'o2',
-    linux: 'o2',
-    windows: 'o1',
+    mac: "o2",
+    linux: "o2",
+    windows: "o1",
   },
-}
+};
 const tool_os_size = {
-  mac: '1.4rem',
-  linux: '1.4rem',
-  windows: '1.2rem',
-}
+  mac: "1.4rem",
+  linux: "1.4rem",
+  windows: "1.2rem",
+};
 const commonTools = computed(() => {
   return [
     {
-      type: 'icon',
-      name: 'close',
+      type: "icon",
+      name: "close",
       size: tool_os_size[os.value],
-      iconfontName: hoverToolName.value != 'close' ? `${os.value}-close` : `${os.value}-close-hover`,
-      order: tool_os_order['close'][os.value],
+      iconfontName:
+        hoverToolName.value != "close"
+          ? `${os.value}-close`
+          : `${os.value}-close-hover`,
+      order: tool_os_order["close"][os.value],
       f: () => {
-        window.box_window.close().catch(err => { console.error(err) })
+        window.box_window.close().catch((err) => {
+          console.error(err);
+        });
       },
     },
     {
-      type: 'icon',
-      name: 'minimize',
+      type: "icon",
+      name: "minimize",
       size: tool_os_size[os.value],
-      iconfontName: hoverToolName.value != 'minimize' ? `${os.value}-minimize` : `${os.value}-minimize-hover`,
-      order: tool_os_order['minimize'][os.value],
+      iconfontName:
+        hoverToolName.value != "minimize"
+          ? `${os.value}-minimize`
+          : `${os.value}-minimize-hover`,
+      order: tool_os_order["minimize"][os.value],
       f: () => {
-        window.box_window.minimize().catch(err => { console.error(err) })
+        window.box_window.minimize().catch((err) => {
+          console.error(err);
+        });
       },
     },
-  ]
-})
+  ];
+});
 
-const titleClick = () => {
-}
+const titleClick = () => {};
 </script>
 
 <template>
   <div class="box drag">
-    <div
-      class="option"
-      :class="backupPosition"
-    >
-      <div
-        class="backup pointer no-drag"
-        v-if="showBackup"
-        v-back
-      >
+    <div class="option" :class="backupPosition">
+      <div class="backup pointer no-drag" v-if="showBackup" v-back>
         <el-icon size="1.2rem">
           <ArrowLeft />
         </el-icon>
-        <span>{{ $t('backup') }}</span>
+        <span>{{ $t("backup") }}</span>
       </div>
     </div>
 
-    <div
-      class="option center no-drag"
-      @click="titleClick"
-    >{{ title }}</div>
+    <div class="option center no-drag" @click="titleClick">{{ title }}</div>
 
-    <div
-      class="option tools"
-      :class="toolsPosition"
-    >
-      <template
-        v-for="(tool, i) in commonTools"
-        :key="i"
-      >
+    <div class="option tools" :class="toolsPosition">
+      <template v-for="(tool, i) in commonTools" :key="i">
         <SvgIconfont
           class="pointer no-drag"
           :class="tool.order"

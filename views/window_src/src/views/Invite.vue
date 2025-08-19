@@ -8,6 +8,7 @@ import QRCode from "qrcode";
 import useClipboard from "vue-clipboard3";
 import html2canvas from "html2canvas";
 import InviteBind from "@/components/custom/InviteBind.vue";
+import { AUTHORIZATION_TYPE_DEVICE, AUTHORIZATION_TYPE_USER } from "@/store";
 
 const router = useRouter();
 const store = useStore();
@@ -15,6 +16,7 @@ const store = useStore();
 const { toClipboard } = useClipboard();
 
 const authorized = computed(() => store.state.authorized);
+const authorizationType = computed(() => store.state.authorization_type);
 const user_binded_invite_code = computed(() =>
   store.state.user_binded_invite_code ? true : false
 );
@@ -24,6 +26,7 @@ const inviteRules = ref([]);
 const inviteQRRef = ref(null);
 const inviteQRURL = ref(null);
 const show_invite_bind = ref(false);
+const showDeviceTip = ref(false);
 
 const copyCode = async () => {
   try {
@@ -84,6 +87,12 @@ const load = () => {
     })
     .finally(() => {
       loading.close();
+      if (
+        authorized.value &&
+        authorizationType.value === AUTHORIZATION_TYPE_DEVICE
+      ) {
+        showDeviceTip.value = true;
+      }
     });
 };
 
@@ -195,6 +204,25 @@ onMounted(() => {
       <p class="rule" v-for="(rule, i) in inviteRules" :key="i">{{ rule }}</p>
     </div>
     <InviteBind v-model:show="show_invite_bind" v-model:bindSuccess="load" />
+    <el-dialog
+      class="device-tip-dialog"
+      width="60%"
+      v-model="showDeviceTip"
+      :show-close="false"
+      :align-center="true"
+    >
+      <div class="content">
+        <p class="p1">温馨提示</p>
+        <p class="p2">邀请奖励需绑定手机号或邮箱后邀请好友获得</p>
+        <el-button
+          type="primary"
+          round
+          v-push="'/bind_phone'"
+          v-if="authorized && authorizationType === AUTHORIZATION_TYPE_DEVICE"
+          >立即绑定</el-button
+        >
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -365,5 +393,22 @@ onMounted(() => {
 }
 .invite-rules .rule {
   font-size: 0.9rem;
+}
+.device-tip-dialog .content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+.device-tip-dialog .content .p1 {
+  text-align: center;
+  font-size: 1.3rem;
+}
+.device-tip-dialog .content .p2 {
+  text-align: center;
+}
+.device-tip-dialog .content .el-button {
+  width: 10rem;
 }
 </style>

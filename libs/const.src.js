@@ -11,6 +11,7 @@ const page_url = process.argv.includes('PAGE_URL')
 const updater_debug = process.argv.includes('UPDATER_DEBUG')
 
 const get_device_id = () => {
+  // return "PCTEST_20250819_001"
   return crypto.createHash('md5').update(machineIdSync()).digest('hex')
 }
 

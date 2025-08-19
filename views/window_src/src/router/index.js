@@ -20,6 +20,18 @@ const router = createRouter({
       },
     },
     {
+      path: '/bind_phone',
+      name: 'bind_phone',
+      component: () => import('@/views/BindPhone.vue'),
+      meta: {},
+    },
+    {
+      path: '/bind_email',
+      name: 'bind_email',
+      component: () => import('@/views/BindEmail.vue'),
+      meta: {},
+    },
+    {
       path: '/invite',
       name: 'invite',
       component: () => import('@/views/Invite.vue'),

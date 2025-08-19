@@ -86,7 +86,7 @@ const phoneCodeSend = () => {
     lock: true,
     background: 'rgba(0, 0, 0, 0.7)',
   })
-  window.box_api.sms(2, form.phone).then(() => {
+  window.box_api.sms(1, form.phone).then(() => {
     codeCountdown.value = 60
     let ticker = setInterval(() => {
       if (codeCountdown.value <= 0) {

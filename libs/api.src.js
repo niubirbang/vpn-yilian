@@ -32,6 +32,7 @@ const {
 const { version: current_version } = require('../package.json')
 
 // ----------constant----------
+const AUTHORIZATION_TYPE_DEVICE = 'device'
 const AUTHORIZATION_TYPE_USER = 'user'
 
 const secret_key = '778876b7d1b35adev5c640g33df44ttd'
@@ -595,6 +596,9 @@ const initialize_ipc = () => {
   registeIPCHandle('api.forget_password', (e, ...v) => {
     return forget_password(...v)
   })
+  registeIPCHandle('api.bind', (e, ...v) => {
+    return bind(...v)
+  })
   registeIPCHandle('api.logout', (e, ...v) => {
     return logout(...v)
   })
@@ -690,8 +694,13 @@ const sms = (type, phone) => {
   })
 }
 const ses = (type, email) => {
-  return new Promise((resolve, reject) => {
-    reject('api_unsupport')
+  return api.request({
+    method: 'POST',
+    url: '/getCode',
+    data: {
+      code_type: type,
+      tel: email,
+    }
   })
 }
 const registe_extra_info = (ip) => {
@@ -738,6 +747,7 @@ const login = (param) => {
     try {
       let req = {}
       let url = null
+      let authorizationType = null
       switch (param.method) {
         case 'phone_password':
           req = {
@@ -745,6 +755,7 @@ const login = (param) => {
             password: param?.password,
           }
           url = '/login'
+          authorizationType = AUTHORIZATION_TYPE_USER
           break
         case 'phone_code':
           req = {
@@ -752,6 +763,12 @@ const login = (param) => {
             code: param?.code,
           }
           url = '/mobileSmsLogin'
+          authorizationType = AUTHORIZATION_TYPE_USER
+          break
+        case 'device':
+          req = {}
+          url = '/appLogin'
+          authorizationType = AUTHORIZATION_TYPE_DEVICE
           break
         default:
           throw new Error('api_unsupport')
@@ -763,7 +780,7 @@ const login = (param) => {
       })
 
       await set_authorization({
-        authorization_type: AUTHORIZATION_TYPE_USER,
+        authorization_type: authorizationType,
         authorization: data.auth_data,
         token: data.token,
         password: password,
@@ -804,6 +821,47 @@ const forget_password = (param) => {
     } catch (err) {
       reject(err)
     }
+  })
+}
+const bind = (param) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let url = '/visitorBind'
+      let req = null
+      switch (param.method) {
+        case 'phone':
+          req = {
+            tel: param.phone,
+            code: param.code,
+            password: param.password,
+          }
+          break
+        case 'email':
+          req = {
+            tel: param.email,
+            code: param.code,
+            password: param.password,
+          }
+          break
+        default:
+          throw new Error('api_unsupport')
+      }
+      await api.request({
+        method: 'POST',
+        url: url,
+        data: req,
+      })
+      await set_authorization({
+        authorization_type: AUTHORIZATION_TYPE_USER,
+        authorization: authorization,
+        token: token,
+        password: param.password,
+      })
+    } catch (err) {
+      reject(err)
+      return
+    }
+    resolve()
   })
 }
 const logout = () => {

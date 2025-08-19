@@ -50,6 +50,7 @@ contextBridge.exposeInMainWorld('box_api', {
   registe: (...args) => invoke('api.registe', ...args),
   login: (...args) => invoke('api.login', ...args),
   forgetPassword: (...args) => invoke('api.forget_password', ...args),
+  bind: (...args) => invoke('api.bind', ...args),
   logout: (...args) => invoke('api.logout', ...args),
   receiveFree: (...args) => invoke('api.receive_free', ...args),
   deleteAccount: (...args) => invoke('api.delete_account', ...args),

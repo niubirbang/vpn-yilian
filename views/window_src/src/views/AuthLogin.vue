@@ -1,104 +1,109 @@
 <script setup>
-import { ref, reactive, computed } from 'vue'
-import { useRouter } from "vue-router"
-import { useStore } from 'vuex'
-import { ElLoading } from 'element-plus'
-import { Error } from '@/notification'
+import { ref, reactive, computed } from "vue";
+import { useRouter } from "vue-router";
+import { useStore } from "vuex";
+import { ElLoading } from "element-plus";
+import { Error } from "@/notification";
 
-const router = useRouter()
-const store = useStore()
+const router = useRouter();
+const store = useStore();
 
-const allow_methods = ref([
-  'phone_password',
-  'phone_code',
-])
+const allow_methods = ref(["phone_password", "phone_code"]);
 const method_names = ref({
-  account_password: '账号密码登录',
-  email_password: '邮箱密码登录',
-  email_code: '邮箱验证码登录',
-  phone_password: '手机密码登录',
-  phone_code: '手机验证码登录',
-})
+  account_password: "账号密码登录",
+  email_password: "邮箱密码登录",
+  email_code: "邮箱验证码登录",
+  phone_password: "手机密码登录",
+  phone_code: "手机验证码登录",
+});
 // const method = ref('account_password')
 // const method = ref('email_password')
 // const method = ref('email_code')
-const method = ref('phone_password')
+const method = ref("phone_password");
 // const method = ref('phone_code')
 
 const form = reactive({
-  account: '',
-  email: '',
-  phone: '',
-  password: '',
-  code: '',
-})
+  account: "",
+  email: "",
+  phone: "",
+  password: "",
+  code: "",
+});
 
 const changeMethod = (m) => {
-  method.value = m
-}
+  method.value = m;
+};
 
-const codeSending = ref(false)
-const codeCountdown = ref(0)
+const codeSending = ref(false);
+const codeCountdown = ref(0);
 const emailCodeSend = () => {
   if (codeSending.value) {
-    return
+    return;
   }
   if (!form.email) {
-    Error('请输入邮箱！')
-    return
+    Error("请输入邮箱！");
+    return;
   }
 
-  codeSending.value = true
+  codeSending.value = true;
   const loading = ElLoading.service({
     lock: true,
-    background: 'rgba(0, 0, 0, 0.7)',
-  })
-  window.box_api.ses(1, form.email).then(() => {
-    codeCountdown.value = 60
-    let ticker = setInterval(() => {
-      if (codeCountdown.value <= 0) {
-        clearInterval(ticker)
-        return
-      }
-      codeCountdown.value--
-    }, 1000)
-  }).catch(err => {
-    Error(err)
-  }).finally(() => {
-    codeSending.value = false
-    loading.close()
-  })
-}
+    background: "rgba(0, 0, 0, 0.7)",
+  });
+  window.box_api
+    .ses(2, form.email)
+    .then(() => {
+      codeCountdown.value = 60;
+      let ticker = setInterval(() => {
+        if (codeCountdown.value <= 0) {
+          clearInterval(ticker);
+          return;
+        }
+        codeCountdown.value--;
+      }, 1000);
+    })
+    .catch((err) => {
+      Error(err);
+    })
+    .finally(() => {
+      codeSending.value = false;
+      loading.close();
+    });
+};
 const phoneCodeSend = () => {
   if (codeSending.value) {
-    return
+    return;
   }
   if (!form.phone) {
-    Error('请输入手机号！')
-    return
+    Error("请输入手机号！");
+    return;
   }
 
-  codeSending.value = true
+  codeSending.value = true;
   const loading = ElLoading.service({
     lock: true,
-    background: 'rgba(0, 0, 0, 0.7)',
-  })
-  window.box_api.sms(2, form.phone).then(() => {
-    codeCountdown.value = 60
-    let ticker = setInterval(() => {
-      if (codeCountdown.value <= 0) {
-        clearInterval(ticker)
-        return
-      }
-      codeCountdown.value--
-    }, 1000)
-  }).catch(err => {
-    Error(err)
-  }).finally(() => {
-    codeSending.value = false
-    loading.close()
-  })
-}
+    background: "rgba(0, 0, 0, 0.7)",
+  });
+  window.box_api
+    .sms(2, form.phone)
+    .then(() => {
+      codeCountdown.value = 60;
+      let ticker = setInterval(() => {
+        if (codeCountdown.value <= 0) {
+          clearInterval(ticker);
+          return;
+        }
+        codeCountdown.value--;
+      }, 1000);
+    })
+    .catch((err) => {
+      Error(err);
+    })
+    .finally(() => {
+      codeSending.value = false;
+      loading.close();
+    });
+};
 
 const submit = () => {
   let param = {
@@ -108,72 +113,96 @@ const submit = () => {
     phone: form.phone,
     password: form.password,
     code: form.code,
-  }
+  };
   switch (method.value) {
-    case 'account_password':
+    case "account_password":
       if (!param.account) {
-        Error('请输入账号!')
-        return
+        Error("请输入账号!");
+        return;
       }
       if (!param.password) {
-        Error('请输入密码!')
-        return
+        Error("请输入密码!");
+        return;
       }
-      break
-    case 'email_password':
+      break;
+    case "email_password":
       if (!param.email) {
-        Error('请输入邮箱!')
-        return
+        Error("请输入邮箱!");
+        return;
       }
       if (!param.password) {
-        Error('请输入密码!')
-        return
+        Error("请输入密码!");
+        return;
       }
-      break
-    case 'email_code':
+      break;
+    case "email_code":
       if (!param.email) {
-        Error('请输入邮箱!')
-        return
+        Error("请输入邮箱!");
+        return;
       }
       if (!param.code) {
-        Error('请输入验证码!')
-        return
+        Error("请输入验证码!");
+        return;
       }
-      break
-    case 'phone_password':
+      break;
+    case "phone_password":
       if (!param.phone) {
-        Error('请输入手机号!')
-        return
+        Error("请输入手机号!");
+        return;
       }
       if (!param.password) {
-        Error('请输入密码!')
-        return
+        Error("请输入密码!");
+        return;
       }
-      break
-    case 'phone_code':
+      break;
+    case "phone_code":
       if (!param.phone) {
-        Error('请输入手机号!')
-        return
+        Error("请输入手机号!");
+        return;
       }
       if (!param.code) {
-        Error('请输入验证码!')
-        return
+        Error("请输入验证码!");
+        return;
       }
-      break
+      break;
   }
 
   const loading = ElLoading.service({
     lock: true,
-    background: 'rgba(0, 0, 0, 0.7)',
-  })
-  window.box_api.login(param).then(() => {
-    router.push('/')
-  }).catch(err => {
-    Error(err)
-  }).finally(() => {
-    loading.close()
-  })
-}
+    background: "rgba(0, 0, 0, 0.7)",
+  });
+  window.box_api
+    .login(param)
+    .then(() => {
+      router.push("/");
+    })
+    .catch((err) => {
+      Error(err);
+    })
+    .finally(() => {
+      loading.close();
+    });
+};
+
+const deviceLogin = () => {
+  const loading = ElLoading.service({
+    lock: true,
+    background: "rgba(0, 0, 0, 0.7)",
+  });
+  window.box_api
+    .login({
+      method: "device",
+    })
+    .then(() => {
+      router.push("/");
+    })
+    .catch((err) => {
+      Error(err);
+    })
+    .finally(() => {
+      loading.close();
+    });
+};
 </script>
 
 <template>
@@ -181,26 +210,14 @@ const submit = () => {
     <p class="title">欢迎登录</p>
     <p class="remark">
       <span>还没有账号</span>
-      <span
-        class="primary pointer"
-        v-push="'/registe'"
-      >立即注册</span>
+      <span class="primary pointer" v-push="'/registe'">立即注册</span>
     </p>
 
     <div class="form">
-      <div
-        class="field"
-        v-if="method === 'account_password'"
-      >
-        <el-input
-          v-model="form.account"
-          placeholder="请输入用户名"
-        >
+      <div class="field" v-if="method === 'account_password'">
+        <el-input v-model="form.account" placeholder="请输入用户名">
           <template #prefix>
-            <img
-              class="icon"
-              src="@/assets/image/form-user.png"
-            >
+            <img class="icon" src="@/assets/image/form-user.png" />
           </template>
         </el-input>
       </div>
@@ -208,15 +225,9 @@ const submit = () => {
         class="field"
         v-if="method === 'email_password' || method === 'email_code'"
       >
-        <el-input
-          v-model="form.email"
-          placeholder="请输入邮箱"
-        >
+        <el-input v-model="form.email" placeholder="请输入邮箱">
           <template #prefix>
-            <img
-              class="icon"
-              src="@/assets/image/form-user.png"
-            >
+            <img class="icon" src="@/assets/image/form-user.png" />
           </template>
         </el-input>
       </div>
@@ -224,15 +235,9 @@ const submit = () => {
         class="field"
         v-if="method === 'phone_password' || method === 'phone_code'"
       >
-        <el-input
-          v-model="form.phone"
-          placeholder="请输入手机号"
-        >
+        <el-input v-model="form.phone" placeholder="请输入手机号">
           <template #prefix>
-            <img
-              class="icon"
-              src="@/assets/image/form-user.png"
-            >
+            <img class="icon" src="@/assets/image/form-user.png" />
           </template>
         </el-input>
       </div>
@@ -240,15 +245,9 @@ const submit = () => {
         class="field"
         v-if="method === 'email_code' || method === 'phone_code'"
       >
-        <el-input
-          v-model="form.code"
-          placeholder="请输入验证码"
-        >
+        <el-input v-model="form.code" placeholder="请输入验证码">
           <template #prefix>
-            <img
-              class="icon"
-              src="@/assets/image/form-code.png"
-            >
+            <img class="icon" src="@/assets/image/form-code.png" />
           </template>
           <template #suffix>
             <el-button
@@ -258,7 +257,9 @@ const submit = () => {
               @click="emailCodeSend"
               link
             >
-              获取验证码<template v-if="codeCountdown > 0">{{ `(${codeCountdown})` }}</template>
+              获取验证码<template v-if="codeCountdown > 0">{{
+                `(${codeCountdown})`
+              }}</template>
             </el-button>
             <el-button
               v-if="method === 'phone_code'"
@@ -267,14 +268,20 @@ const submit = () => {
               @click="phoneCodeSend"
               link
             >
-              获取验证码<template v-if="codeCountdown > 0">{{ `(${codeCountdown})` }}</template>
+              获取验证码<template v-if="codeCountdown > 0">{{
+                `(${codeCountdown})`
+              }}</template>
             </el-button>
           </template>
         </el-input>
       </div>
       <div
         class="field"
-        v-if="method === 'account_password' || method === 'email_password' || method === 'phone_password'"
+        v-if="
+          method === 'account_password' ||
+          method === 'email_password' ||
+          method === 'phone_password'
+        "
       >
         <el-input
           type="password"
@@ -283,38 +290,34 @@ const submit = () => {
           placeholder="请输入密码"
         >
           <template #prefix>
-            <img
-              class="icon"
-              src="@/assets/image/form-password.png"
-            >
+            <img class="icon" src="@/assets/image/form-password.png" />
           </template>
         </el-input>
       </div>
     </div>
 
-    <el-button
-      style="align-self: flex-end"
-      link
-      v-push="'/forget_password'"
-    >忘记密码？</el-button>
-
-    <el-button
-      class="large-size"
-      type="primary"
-      round
-      @click="submit"
-    >登录</el-button>
-
-    <template
-      v-for="(m, i) in allow_methods"
-      :key="i"
+    <el-button style="align-self: flex-end" link v-push="'/forget_password'"
+      >忘记密码？</el-button
     >
-      <el-button
-        v-if="method !== m"
-        @click="changeMethod(m)"
-        link
-      >{{ method_names[m] }}</el-button>
+
+    <el-button class="large-size" type="primary" round @click="submit"
+      >登录</el-button
+    >
+
+    <template v-for="(m, i) in allow_methods" :key="i">
+      <el-button v-if="method !== m" @click="changeMethod(m)" link>{{
+        method_names[m]
+      }}</el-button>
     </template>
+
+    <div class="others">
+      <el-divider>
+        <p class="info">其他方式</p>
+      </el-divider>
+      <el-button class="large-size" round plain @click.stop="deviceLogin"
+        >游客登录</el-button
+      >
+    </div>
   </div>
 </template>
 
@@ -337,5 +340,17 @@ const submit = () => {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+.others {
+  margin-top: 5rem;
+  display: flex;
+  flex-direction: column;
+}
+.others .info {
+  color: var(--el-color-info);
+}
+.others .el-button {
+  --el-button-text-color: var(--el-color-primary);
 }
 </style>
