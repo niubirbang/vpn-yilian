@@ -122,6 +122,7 @@
       }
     },
     "mac": {
+      "identity": null,
       "icon": "icons/icon.icns",
       "hardenedRuntime": true,
       "gatekeeperAssess": false,
