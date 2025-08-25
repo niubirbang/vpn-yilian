@@ -74,12 +74,12 @@ jobs:
           files: |
             dist/*.zip
 
-      - name: Release
-        uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
-        env:
-          GITHUB_TOKEN: ${{ secrets.V2B_PKG_REPOSITORY_TOKEN }}
-        with:
-          repository: niubirbang/v2b-pkg
-          files: |
-            dist/*.zip
+      # - name: Release
+      #   uses: softprops/action-gh-release@v1
+      #   if: startsWith(github.ref, 'refs/tags/')
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.V2B_PKG_REPOSITORY_TOKEN }}
+      #   with:
+      #     repository: niubirbang/v2b-pkg
+      #     files: |
+      #       dist/*.zip
