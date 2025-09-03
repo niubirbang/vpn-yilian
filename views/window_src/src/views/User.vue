@@ -256,10 +256,7 @@ onMounted(() => {
         </p>
         <p class="y1" v-push="'/login'" v-else>请登录</p>
 
-        <p
-          class="y3"
-          v-if="authorized && authorizationType === AUTHORIZATION_TYPE_DEVICE"
-        >
+        <p class="y3" v-if="authorized && authorizationType === AUTHORIZATION_TYPE_DEVICE">
           未绑定手机号/邮箱
         </p>
 
@@ -270,12 +267,7 @@ onMounted(() => {
           </template>
         </div>
       </div>
-      <img
-        v-if="authorized"
-        class="x3"
-        src="@/assets/image/fresh.png"
-        :class="{ animation: freshingUser }"
-      />
+      <img v-if="authorized" class="x3" src="@/assets/image/fresh.png" :class="{ animation: freshingUser }" />
     </div>
     <div class="l2 page-padding">
       <div class="x1 pointer vip" v-push="'/recharge?key=vip'">
@@ -298,12 +290,7 @@ onMounted(() => {
     <div class="l3 shadow page-padding">
       <p class="x1">我的功能</p>
       <template v-for="(option, i) of options">
-        <div
-          :key="i"
-          class="x2 pointer"
-          v-if="optionShow(option)"
-          @click="option.do"
-        >
+        <div :key="i" class="x2 pointer" v-if="optionShow(option)" @click="option.do">
           <img :src="option.icon" />
           <p>{{ option.name }}</p>
           <el-icon size="1rem">
@@ -322,37 +309,43 @@ onMounted(() => {
   flex-direction: column;
   gap: 1rem;
 }
+
 .page-padding {
   box-sizing: border-box;
   margin: 0 var(--page-padding);
 }
+
 .l1 {
   display: flex;
   align-items: center;
   gap: 1rem;
 }
+
 .l1 .x1 {
   width: auto;
   height: 5rem;
   border-radius: 50%;
 }
+
 .l1 .x2 {
-  height: 3.6rem;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
-  gap: 1rem;
+  gap: 0.5rem;
 }
+
 .l1 .x2 .y1 {
   font-weight: bold;
   font-size: 1.2rem;
 }
+
 .l1 .x2 .y2 {
   display: flex;
   align-items: baseline;
   gap: 1rem;
 }
+
 .l1 .x2 .y2 .z1 {
   background: var(--el-color-primary);
   color: var(--el-color-white);
@@ -361,18 +354,22 @@ onMounted(() => {
   padding: 0.3rem 1rem;
   font-size: 0.8rem;
 }
+
 .l1 .x2 .y2 .z2 {
   font-size: 0.8rem;
 }
+
 .l1 .x2 .y3 {
   color: var(--el-color-info);
   font-size: 0.9rem;
 }
+
 .l1 .x3 {
   margin-left: auto;
   width: 1.6rem;
   height: auto;
 }
+
 .l1 .x3.animation {
   animation: rotate 2s linear infinite;
 }
@@ -384,12 +381,15 @@ onMounted(() => {
   justify-content: space-between;
   gap: 1rem;
 }
+
 .l2 .m1 {
   font-weight: bold;
 }
+
 .l2 .m2 {
   font-size: 0.8rem;
 }
+
 .l2 .x1 {
   box-sizing: border-box;
   padding: 1rem;
@@ -400,21 +400,25 @@ onMounted(() => {
   flex-direction: column;
   gap: 0.5rem;
 }
+
 .l2 .x1.vip {
   background: url("@/assets/image/vip-bg.png") no-repeat;
   background-size: 100% 100%;
   color: var(--el-color-primary-dark-2);
 }
+
 .l2 .x1.svip {
   background: url("@/assets/image/svip-bg.png") no-repeat;
   background-size: 100% 100%;
   color: var(--el-color-primary2-dark-2);
 }
+
 .l2 .x1 .y1 {
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
+
 .l2 .x1 .y1 img {
   height: 1.3rem;
   width: auto;
@@ -429,22 +433,27 @@ onMounted(() => {
   flex-direction: column;
   gap: 2rem;
 }
+
 .l3 .x1 {
   font-size: 1.2rem;
   font-weight: bold;
 }
+
 .x2 {
   display: flex;
   align-items: center;
   gap: 1rem;
 }
+
 .x2 img {
   width: 1.8rem;
   height: auto;
 }
+
 .x2 p {
   font-size: 1.1rem;
 }
+
 .x2 .el-icon {
   margin-left: auto;
 }
