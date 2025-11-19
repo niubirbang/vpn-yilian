@@ -17,7 +17,7 @@ const init = async () => {
 
 const initialize = () => {
   tray = new Tray(icon)
-  tray.setTitle(tray_name())
+  // tray.setTitle(tray_name())
   tray.setToolTip(tray_name())
 
   tray.setContextMenu(Menu.buildFromTemplate(menus()))
