@@ -2,7 +2,7 @@ const crypto = require("crypto");
 const axios = require("axios");
 const qs = require("qs");
 const { dialog, app } = require("electron");
-const { parse: x_parse } = require("./xfuture");
+const { parse: x_parse } = require("./service");
 const {
   set_api_rule: core_set_api_rule,
   set_subscribe: core_set_subscribe,
@@ -1155,7 +1155,7 @@ const obtain_subscribe = () => {
         method: "POST",
         url: "/nodeList",
       });
-      subscribe = data_to_subscribe(data);
+      subscribe = await data_to_subscribe(data);
     } catch (err) {
       reject(err);
       return;
@@ -1324,12 +1324,13 @@ const subscribe_type_sorts = {
   free: 3,
 };
 
-const data_to_subscribe = (data) => {
+const data_to_subscribe = async (data) => {
   let subscribe = [];
   for (let item of data) {
     let children = [];
     for (let url of item.node) {
-      const x = x_parse(url);
+      const x = await x_parse(url);
+      console.log("*********", x);
       children.push({
         name: decodeURIComponent(x.remark),
         url: url,

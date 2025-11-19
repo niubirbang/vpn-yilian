@@ -3,6 +3,8 @@
   "name_cn": "易链加速器",
   "name_en": "YL SPEED",
   "app_id": "com.yilian.www",
+  "service_preinstall": true,
+  "service_version": "2.0.5",
   "version": "1.0.2",
   "version_force": false,
   "version_logs": [
@@ -16,25 +18,24 @@
     "use_last_choise": true
   },
   "scripts": {
+    "service:download": "node build/service/download.js",
+    "service:build": "node build/service/build.js",
     "obfuscate": "node build/obfuscate.js",
     "unobfuscate": "node build/unobfuscate.js",
     "channel": "node build/channel.js",
-
     "icons:tray": "cp ./icons/24x24.png ./icons/tray.png",
     "icons:window": "cp ./icons/24x24.png ./icons/window.png",
     "icons:win": "electron-icon-builder --input=./icons/win.png --output=./ --flatten && npm run icons:tray && npm run icons:window",
     "icons:mac": "electron-icon-builder --input=./icons/mac.png --output=./ --flatten && npm run icons:tray && npm run icons:window",
-
     "install:view:window": "cd ./views/window_src && npm install",
     "dev:view:window": "npm --prefix ./views/window_src run dev",
     "build:view:window": "npm --prefix ./views/window_src run build",
-
     "install:box": "npm install",
     "dev:box": "electron . LOG_TO_TERMINAL LOG_TO_FILE LOG_LEVEL=LOG PAGE_DEBUG PAGE_URL",
     "test:box": "electron . LOG_TO_TERMINAL LOG_LEVEL=LOG PAGE_DEBUG",
-    "build:box:win": "electron-builder -p never",
-    "build:box:mac": "electron-builder -p never",
-
+    "build:box:win:x64": "electron-builder --win --x64 -p never",
+    "build:box:mac:x64": "electron-builder --mac --x64 -p never",
+    "build:box:mac:arm64": "electron-builder --mac --arm64 -p never",
     "pkg": "node build/package.js"
   },
   "author": "",
@@ -45,10 +46,10 @@
     "electron-builder": "^24.4.0",
     "electron-icon-builder": "^2.0.1",
     "javascript-obfuscator": "^4.1.1",
-    "js-yaml": "^4.1.0",
-    "xfuture": "1.8.6"
+    "js-yaml": "^4.1.0"
   },
   "dependencies": {
+    "@niubir/space-envoy-service": "^2.0.6",
     "axios": "^1.6.8",
     "crypto-js": "^4.2.0",
     "electron-asar-hot-updater": "^0.1.3",
@@ -70,14 +71,14 @@
       "!views/window_src/**/*",
       "!channels/**/*",
       "!server/**/*",
-      "!node_modules/xfuture"
+      "!resources/service"
     ],
     "extraResources": [
-      "node_modules/xfuture/index.js",
-      "node_modules/xfuture/parser.js",
-      "node_modules/xfuture/resources",
-      "node_modules/xfuture/package/${platform}",
-      "channel.json"
+      "channel.json",
+      {
+        "from": "resources/service/service.zip",
+        "to": "service/service.zip"
+      }
     ],
     "nsis": {
       "allowToChangeInstallationDirectory": true,

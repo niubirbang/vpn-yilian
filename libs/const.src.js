@@ -42,7 +42,6 @@ const get_resources_path = () => {
 const resources_path = get_resources_path()
 const config_path = path.join(app.getPath('appData'), `${name}/.config`)
 const log_path = path.join(app.getPath('appData'), `${name}/.log`)
-const xfuture_path = path.join(resources_path, 'node_modules/xfuture')
 const channel_path = path.join(resources_path, 'channel.json')
 const dev_updater_server_path = path.join(resources_path, 'updater.dev.json')
 
@@ -70,7 +69,6 @@ module.exports = {
   resources_path,
   config_path,
   log_path,
-  xfuture_path,
   channel_path,
   device_id,
   device_name,

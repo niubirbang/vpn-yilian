@@ -1,17 +1,25 @@
 name: Release Mac
+
+env:
+  SPACE_ENVOY_SERVICE_DOWNLOAD_TOKEN: ${{ secrets.SPACE_ENVOY_SERVICE_DOWNLOAD_TOKEN }}
+
 on:
   push:
     tags:
-      - 'mac_v*.*.*'
-      - 'mac_beta_*_channel_v*.*.*_*'
+      - "mac_v*.*.*"
+      - "mac_beta_*_channel_v*.*.*_*"
 
 jobs:
   release:
     name: Release Mac flow
-    runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os: [macos-latest]
+        arch:
+          - x64
+          - arm64
+    runs-on: ${{ matrix.os }}
     env:
       DO_SIGN: ${{ (secrets.MAC_CSC_LINK != '' && secrets.MAC_CSC_KEY_PASSWORD != '') && 1 || 0 }}
       DO_NOTARIZE: ${{ (secrets.MAC_APPLE_ID != '' && secrets.MAC_APPLE_ID_PASSWORD != '' && secrets.MAC_APPLE_TEAM_ID != '') && 1 || 0 }}
@@ -29,6 +37,8 @@ jobs:
         run: |
           npm run install:view:window
           npm run install:box
+          npm run service:download --arch="${{ matrix.arch }}"
+          npm run service:build --arch="${{ matrix.arch }}"
           npm run icons:mac
           npm run obfuscate
           npm run channel -- ${{ github.ref_name }}
@@ -43,12 +53,12 @@ jobs:
           CSC_LINK: ${{ secrets.MAC_CSC_LINK }}
           CSC_KEY_PASSWORD: ${{ secrets.MAC_CSC_KEY_PASSWORD }}
         run: |
-          npm run build:box:mac
+          npm run build:box:mac:${{ matrix.arch }}
 
       - name: Build box without sign
         if: env.DO_SIGN == 0
         run: |
-          npm run build:box:mac
+          npm run build:box:mac:${{ matrix.arch }}
 
       - name: Notarize box
         if: env.DO_NOTARIZE == 1
@@ -64,7 +74,7 @@ jobs:
 
       - name: Package
         run: |
-          npm run pkg
+          node build/package.js --arch="${{ matrix.arch }}"
 
       - name: Release
         uses: softprops/action-gh-release@v1
@@ -72,13 +82,3 @@ jobs:
         with:
           files: |
             dist/*.zip
-
-      # - name: Release
-      #   uses: softprops/action-gh-release@v1
-      #   if: startsWith(github.ref, 'refs/tags/')
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.V2B_PKG_REPOSITORY_TOKEN }}
-      #   with:
-      #     repository: niubirbang/v2b-pkg
-      #     files: |
-      #       dist/*.zip

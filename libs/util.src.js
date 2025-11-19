@@ -1,151 +1,178 @@
-const fs = require('fs')
-const path = require('path')
+const fs = require("fs");
+const path = require("path");
+const { app } = require("electron");
 
 const exists = (p) => {
-  return fs.existsSync(p)
-}
+  return fs.existsSync(p);
+};
 
 const mkdir = (dirpath) => {
   if (!fs.existsSync(dirpath)) {
-    mkdir(path.dirname(dirpath))
-    fs.mkdirSync(dirpath)
+    mkdir(path.dirname(dirpath));
+    fs.mkdirSync(dirpath);
   }
-}
+};
 
 const remove = (p) => {
   if (!exists(p)) {
-    return
+    return;
   }
-  const stat = fs.statSync(p)
+  const stat = fs.statSync(p);
   if (stat.isFile()) {
-    fs.unlinkSync(p)
+    fs.unlinkSync(p);
   } else if (stat.isDirectory()) {
     fs.readdirSync(p).forEach((file) => {
-      const curPath = path.join(p, file)
+      const curPath = path.join(p, file);
       if (fs.lstatSync(curPath).isDirectory()) {
-        remove(curPath)
+        remove(curPath);
       } else {
-        fs.unlinkSync(curPath)
+        fs.unlinkSync(curPath);
       }
-    })
-    fs.rmdirSync(p)
+    });
+    fs.rmdirSync(p);
   }
-}
+};
 
 const copyFile = (source, target) => {
-  let targetFile = target
+  let targetFile = target;
   if (fs.existsSync(target)) {
     if (fs.lstatSync(target).isDirectory()) {
-      targetFile = path.join(target, path.basename(source))
+      targetFile = path.join(target, path.basename(source));
     }
   } else {
-    const targetDir = path.dirname(target)
+    const targetDir = path.dirname(target);
     if (!fs.existsSync(targetDir)) {
-      fs.mkdirSync(targetDir, { recursive: true })
+      fs.mkdirSync(targetDir, { recursive: true });
     }
   }
-  fs.writeFileSync(targetFile, fs.readFileSync(source))
-}
+  fs.writeFileSync(targetFile, fs.readFileSync(source));
+};
 
 const copyDir = (source, target) => {
   if (!fs.existsSync(target)) {
-    mkdir(target)
+    mkdir(target);
   }
 
-  const files = fs.readdirSync(source)
+  const files = fs.readdirSync(source);
   files.forEach(function (file) {
-    const curSource = path.join(source, file)
-    const curTarget = path.join(target, file)
+    const curSource = path.join(source, file);
+    const curTarget = path.join(target, file);
     if (fs.lstatSync(curSource).isDirectory()) {
-      copyDir(curSource, curTarget)
+      copyDir(curSource, curTarget);
     } else {
-      copyFile(curSource, curTarget)
+      copyFile(curSource, curTarget);
     }
-  })
-}
+  });
+};
 
 const copy = (source, target) => {
   if (!fs.existsSync(source)) {
-    throw new Error(`${source} not exists`)
+    throw new Error(`${source} not exists`);
   }
 
   if (fs.existsSync(target)) {
-    throw new Error(`${target} exists`)
+    throw new Error(`${target} exists`);
   }
 
   if (fs.lstatSync(source).isDirectory()) {
-    copyDir(source, target)
+    copyDir(source, target);
   } else {
-    copyFile(source, target)
+    copyFile(source, target);
   }
-}
+};
 
 const write = (filePath, data) => {
-  mkdir(path.dirname(filePath))
-  fs.writeFileSync(filePath, data, 'utf-8')
-}
+  mkdir(path.dirname(filePath));
+  fs.writeFileSync(filePath, data, "utf-8");
+};
 
 const read = (filePath) => {
-  return fs.readFileSync(filePath, 'utf-8')
-}
+  return fs.readFileSync(filePath, "utf-8");
+};
 
 const compareVersion = (version1, version2) => {
-  const v1 = version1.split('.')
-  const v2 = version2.split('.')
+  const v1 = version1.split(".");
+  const v2 = version2.split(".");
 
-  const maxLength = Math.max(v1.length, v2.length)
+  const maxLength = Math.max(v1.length, v2.length);
   for (let i = 0; i < maxLength; i++) {
-    const num1 = parseInt(v1[i] || 0)
-    const num2 = parseInt(v2[i] || 0)
+    const num1 = parseInt(v1[i] || 0);
+    const num2 = parseInt(v2[i] || 0);
     if (num1 < num2) {
-      return -1
+      return -1;
     } else if (num1 > num2) {
-      return 1
+      return 1;
     }
   }
-  return 0
-}
+  return 0;
+};
 
 const executeTask = ({
   task,
   delay = 3000,
   maxAttempts = 20,
-  onSuccess = () => { },
-  onMaxAttempted = () => { },
+  onSuccess = () => {},
+  onMaxAttempted = () => {},
 }) => {
-  let attempts = 0
-  let isStopped = false
+  let attempts = 0;
+  let isStopped = false;
 
   const executeWithDelay = () => {
     if (isStopped) {
-      return
+      return;
     }
 
     if (attempts >= maxAttempts) {
       if (onMaxAttempted) {
-        onMaxAttempted()
+        onMaxAttempted();
       }
-      return
+      return;
     }
 
-    task().then((data) => {
-      if (onSuccess) {
-        onSuccess(data)
-      }
-    }).catch(() => {
-      attempts++
-      setTimeout(executeWithDelay, delay)
-    })
-  }
+    task()
+      .then((data) => {
+        if (onSuccess) {
+          onSuccess(data);
+        }
+      })
+      .catch(() => {
+        attempts++;
+        setTimeout(executeWithDelay, delay);
+      });
+  };
 
-  executeWithDelay()
+  executeWithDelay();
 
   return {
     close: () => {
-      isStopped = true
+      isStopped = true;
+    },
+  };
+};
+
+const getConfig = (key) => {
+  if (key in process.env) {
+    return process.env[key];
+  }
+  return (
+    process.argv.find((arg) => arg.startsWith(key))?.replace(`${key}=`, "") ||
+    undefined
+  );
+};
+
+const getResourceDir = () => {
+  let resDir;
+  if (!app.isPackaged) {
+    resDir = path.join(app.getAppPath(), "/resources");
+  } else {
+    if (app.getAppPath().endsWith("asar")) {
+      resDir = process.resourcesPath;
+    } else {
+      resDir = app.getAppPath();
     }
   }
-}
+  return resDir;
+};
 
 module.exports = {
   compareVersion,
@@ -158,4 +185,6 @@ module.exports = {
   write,
   read,
   executeTask,
-}
+  getConfig,
+  getResourceDir,
+};

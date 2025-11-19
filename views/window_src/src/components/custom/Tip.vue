@@ -80,7 +80,7 @@ const tip = computed(() => {
 </script>
 
 <template>
-  <div class="tip">
+  <div class="tip" v-if="tip">
     <p class="info">{{ tip.title }}</p>
     <el-button
       type="primary"
