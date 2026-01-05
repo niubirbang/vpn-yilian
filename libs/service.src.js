@@ -1,5 +1,5 @@
 const { registryBeforeReady, registryBeforeQuit } = require("./hook");
-const { Service } = require("@niubir/space-envoy-service");
+const { Service } = require("./kernel");
 const { getConfig, getResourceDir } = require("./util");
 const path = require("path");
 
