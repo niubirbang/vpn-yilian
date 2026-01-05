@@ -160,10 +160,7 @@ const run_delay = () => {
           `test node delay success: ${node.name}, ${node.address}:${node.port}, ${delay}`
         );
         const old_delay = store.delaies[node.url];
-        if (
-          old_delay === null ||
-          (delay > 0 && old_delay > 0 && old_delay > delay)
-        ) {
+        if (!old_delay || (delay > 0 && old_delay > 0 && old_delay > delay)) {
           store.delaies[node.url] = delay;
           sync_store();
         }
@@ -602,6 +599,7 @@ const get_store = () => {
     current_names: store.current_names,
     current_node: store.current_node,
     connect_time: store.connect_time,
+    delaies: store.delaies,
   };
 };
 const sync_store = () => {
