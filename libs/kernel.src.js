@@ -333,8 +333,8 @@ class Service {
         "Bypass",
         "-Command",
         `"& {`,
-        `  $exe = '${this.ServerFile.replace(/'/g, "''")}'`,
-        `  if (!(Test-Path $exe)) { throw 'exe not found' }`,
+        `  $exe = '${this.ServerFile.replace(/'/g, "''")}';`,
+        `  if (!(Test-Path $exe)) { throw 'exe not found' };`,
         `  Start-Process -FilePath $exe -ArgumentList 'install' -Verb RunAs -Wait -WindowStyle Hidden`,
         `}"`,
       ].join(" ");
@@ -357,8 +357,8 @@ class Service {
         "Bypass",
         "-Command",
         `"& {`,
-        `  $exe = '${this.ServerFile.replace(/'/g, "''")}'`,
-        `  if (!(Test-Path $exe)) { throw 'exe not found' }`,
+        `  $exe = '${this.ServerFile.replace(/'/g, "''")}';`,
+        `  if (!(Test-Path $exe)) { throw 'exe not found' };`,
         `  Start-Process -FilePath $exe -ArgumentList 'uninstall' -Verb RunAs -Wait -WindowStyle Hidden`,
         `}"`,
       ].join(" ");
