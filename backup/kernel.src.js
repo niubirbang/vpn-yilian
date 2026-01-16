@@ -369,6 +369,43 @@ class Service {
       );
     }
   }
+  async installServerWindowsBack() {
+    console.log("[space-envoy] installing");
+
+    const ps1 = path.join(os.tmpdir(), "space_service_install.ps1");
+    fs.writeFileSync(
+      ps1,
+      `Start-Process -FilePath "${this.ServerFile}" -ArgumentList "install" -Verb RunAs -Wait -WindowStyle Hidden`
+    );
+    try {
+      execSync(`powershell -ExecutionPolicy Bypass -File "${ps1}"`, {
+        encoding: "utf8",
+      });
+    } catch (err) {
+      throw new Error(
+        `failed to install: ${err?.message}\n${err?.stdout || ""}`
+      );
+    }
+    await this.installServerAfterCheck();
+  }
+  async uninstallServerWindowsBack() {
+    console.log("[space-envoy] uninstalling");
+
+    const ps1 = path.join(os.tmpdir(), "space_service_uninstall.ps1");
+    fs.writeFileSync(
+      ps1,
+      `Start-Process -FilePath "${this.ServerFile}" -ArgumentList "uninstall" -Verb RunAs -Wait -WindowStyle Hidden`
+    );
+    try {
+      execSync(`powershell -ExecutionPolicy Bypass -File "${ps1}"`, {
+        encoding: "utf8",
+      });
+    } catch (err) {
+      throw new Error(
+        `failed to uninstall: ${err?.message}\n${err?.stdout || ""}`
+      );
+    }
+  }
   async logWindows() {
     return execSync(
       `powershell -Command Get-EventLog -LogName Application -Source ${this.ServerName} -Newest 1000`,
